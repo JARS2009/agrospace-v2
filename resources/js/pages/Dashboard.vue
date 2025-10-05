@@ -49,42 +49,49 @@ const selectedDate = ref(new Date().toISOString().split('T')[0]);
 const selectedCard = ref<number | null>(null);
 const plowMode = ref(false); // Estado para el modo de arado
 const signMode = ref(false); // Estado para el modo de colocación de letreros
+const potatoMode = ref(false); // Estado para el modo de siembra de papas
+const alfalfaMode = ref(false); // Estado para el modo de siembra de alfalfa
+const rainMode = ref(false); // Estado para el modo de lluvia
+const sprinklerMode = ref(false); // Estado para el modo de aspersores
+const harvestMode = ref(false); // Estado para el modo de cosecha
 const showSignModal = ref(false); // Estado para mostrar el modal de texto
 const signText = ref(''); // Texto del letrero
+const showHarvestModal = ref(false); // Estado para mostrar el modal de cosecha
+const harvestData = ref({ count: 0, quality: '', xp: 0 }); // Datos de la cosecha
 
 // Datos de las tarjetas informativas
 const infoCards = ref([
     {
         id: 1,
-        title: 'Clima Actual',
-        icon: '🌤️',
-        summary: 'Soleado, 24°C',
+        title: 'Precipitaciones 2025',
+        icon: '🌧️',
+        summary: 'Patrón estacional claro',
         details:
-            'Condiciones ideales para el crecimiento. Humedad: 65%, Viento: 12 km/h del este.',
+            'Es el proceso en el que el agua cae de las nubes a la superficie terrestre en forma líquida o sólida, como lluvia, nieve o granizo. Enero: 86.1mm, Febrero: 101.3mm, Marzo: 87.4mm, Abril: 49.8mm, Mayo: 15.5mm, Junio: 127.7mm, Julio: 1.4mm, Agosto: 3.7mm, Septiembre: 0mm. Las precipitaciones son la principal fuente natural de agua para cultivos, ríos y reservorios. En Cajamarca, durante 2025, se observa un patrón estacional claro: Temporada de lluvias (enero a abril) con máximos en febrero y marzo, y temporada seca (mayo a septiembre) con lluvias casi nulas.',
     },
     {
         id: 2,
-        title: 'Estado del Suelo',
-        icon: '🌱',
-        summary: 'Óptimo',
+        title: 'Tipo de Suelo en Cajamarca',
+        icon: '🏔️',
+        summary: 'Franco Arenoso',
         details:
-            'pH: 6.8, Nutrientes balanceados, Humedad del suelo: 45%. Listo para siembra.',
+            'Este suelo retiene los nutrientes y tiene una textura que permite que las raíces de las plantas accedan a él, pero drena bien. Esto significa que, con el tiempo, el agua se filtra, evitando que las plantas se pudran, mientras que tiene una mezcla equilibrada de limo y arcilla. Es ideal para el cultivo ya que proporciona un balance perfecto entre retención de nutrientes y drenaje.',
     },
     {
         id: 3,
-        title: 'Cultivos Activos',
-        icon: '🌾',
-        summary: '12 parcelas',
+        title: 'Temperatura en Cajamarca 2025',
+        icon: '🌡️',
+        summary: 'Clima templado 21.5°C - 24.1°C',
         details:
-            'Maíz: 4 parcelas (75% crecimiento), Tomates: 5 parcelas (60% crecimiento), Lechugas: 3 parcelas (90% crecimiento).',
+            'Enero: 22.89°C, Febrero: 21.83°C, Marzo: 21.56°C, Abril: 22.1°C, Mayo: 22.43°C, Junio: 21.55°C, Julio: 22.99°C, Agosto: 24.15°C. En Cajamarca, la temperatura durante el año 2025 está entre 21.5°C y 24.1°C. Esto significa que no hace ni mucho frío ni mucho calor, sino un clima templado y agradable. Gracias a ese clima, el agua que se usa para regar no se evapora muy rápido, pero las plantas sí tienen suficiente calor para crecer bien. Hay una evapotranspiración moderada.',
     },
     {
         id: 4,
-        title: 'Recursos',
+        title: 'Sistemas de Riego',
         icon: '💧',
-        summary: 'Disponibles',
+        summary: 'Necesarios en temporada seca',
         details:
-            'Agua: 850L, Semillas: 45 paquetes, Fertilizante: 12kg, Herramientas: 8 disponibles.',
+            'Cuando termina la temporada de lluvias (mayo-septiembre), los agricultores necesitan usar sistemas de riego para que las plantas sigan creciendo y no se sequen. El agua de lluvia no alcanza todo el año para los cultivos, por lo que es fundamental contar con sistemas de irrigación eficientes durante los meses secos.',
     },
 ]);
 
@@ -96,9 +103,84 @@ const selectCard = (cardId: number) => {
 // Función para alternar el modo de arado
 const togglePlowMode = () => {
     plowMode.value = !plowMode.value;
-    // Desactivar modo letrero si se activa arado
+    // Desactivar modo letrero, papa, alfalfa, lluvia, aspersores y cosecha si se activa arado
     if (plowMode.value) {
         signMode.value = false;
+        potatoMode.value = false;
+        alfalfaMode.value = false;
+        rainMode.value = false;
+        sprinklerMode.value = false;
+        harvestMode.value = false;
+    }
+};
+
+// Función para alternar el modo de siembra de papas
+const togglePotatoMode = () => {
+    potatoMode.value = !potatoMode.value;
+    // Desactivar otros modos si se activa papa
+    if (potatoMode.value) {
+        plowMode.value = false;
+        signMode.value = false;
+        alfalfaMode.value = false;
+        rainMode.value = false;
+        sprinklerMode.value = false;
+        harvestMode.value = false;
+    }
+};
+
+// Función para alternar el modo de siembra de alfalfa
+const toggleAlfalfaMode = () => {
+    alfalfaMode.value = !alfalfaMode.value;
+    // Desactivar otros modos si se activa alfalfa
+    if (alfalfaMode.value) {
+        plowMode.value = false;
+        signMode.value = false;
+        potatoMode.value = false;
+        rainMode.value = false;
+        sprinklerMode.value = false;
+        harvestMode.value = false;
+    }
+};
+
+// Función para alternar el modo de lluvia
+const toggleRainMode = () => {
+    rainMode.value = !rainMode.value;
+    // Desactivar otros modos si se activa lluvia
+    if (rainMode.value) {
+        plowMode.value = false;
+        signMode.value = false;
+        potatoMode.value = false;
+        alfalfaMode.value = false;
+        sprinklerMode.value = false;
+        harvestMode.value = false;
+    }
+};
+
+// Función para alternar el modo de aspersores
+const toggleSprinklerMode = () => {
+    sprinklerMode.value = !sprinklerMode.value;
+    // Desactivar otros modos si se activa aspersores
+    if (sprinklerMode.value) {
+        plowMode.value = false;
+        signMode.value = false;
+        potatoMode.value = false;
+        alfalfaMode.value = false;
+        rainMode.value = false;
+        harvestMode.value = false;
+    }
+};
+
+// Función para alternar el modo de cosecha
+const toggleHarvestMode = () => {
+    harvestMode.value = !harvestMode.value;
+    // Desactivar otros modos si se activa cosecha
+    if (harvestMode.value) {
+        plowMode.value = false;
+        signMode.value = false;
+        potatoMode.value = false;
+        alfalfaMode.value = false;
+        rainMode.value = false;
+        sprinklerMode.value = false;
     }
 };
 
@@ -107,6 +189,11 @@ const activateSignMode = () => {
     if (signText.value.trim()) {
         signMode.value = true;
         plowMode.value = false; // Desactivar modo arado
+        potatoMode.value = false; // Desactivar modo papa
+        alfalfaMode.value = false; // Desactivar modo alfalfa
+        rainMode.value = false; // Desactivar modo lluvia
+        sprinklerMode.value = false; // Desactivar modo aspersores
+        harvestMode.value = false; // Desactivar modo cosecha
         showSignModal.value = false;
     }
 };
@@ -128,10 +215,22 @@ const onSignPlaced = () => {
     signMode.value = false;
     signText.value = '';
 };
+
+// Función para manejar la cosecha de papas
+const onPotatoHarvested = (count: number, quality: string, xp: number) => {
+    harvestData.value = { count, quality, xp };
+    showHarvestModal.value = true;
+    harvestMode.value = false; // Desactivar modo cosecha después de cosechar
+};
+
+// Función para cerrar el modal de cosecha
+const closeHarvestModal = () => {
+    showHarvestModal.value = false;
+};
 </script>
 
 <template>
-    <Head title="Dashboard - AgroSpace" />
+    <Head title="Dashboard - ChakraSpace" />
 
     <div
         class="min-h-screen bg-gradient-to-br from-green-50 via-blue-50 to-amber-50"
@@ -147,7 +246,7 @@ const onSignPlaced = () => {
                         <h1
                             class="font-fredoka text-2xl font-bold text-green-800"
                         >
-                            AgroSpace
+                            ChakraSpace
                         </h1>
                     </div>
 
@@ -235,8 +334,14 @@ const onSignPlaced = () => {
                         <FarmScene3D
                             :plowMode="plowMode"
                             :signMode="signMode"
+                            :potatoMode="potatoMode"
+                            :alfalfaMode="alfalfaMode"
+                            :rainMode="rainMode"
+                            :sprinklerMode="sprinklerMode"
+                            :harvestMode="harvestMode"
                             :signText="signText"
                             @signPlaced="onSignPlaced"
+                            @potatoHarvested="onPotatoHarvested"
                         />
                     </div>
                 </div>
@@ -251,7 +356,7 @@ const onSignPlaced = () => {
                             Información de la Granja
                         </h3>
 
-                        <div class="space-y-2">
+                        <div class="space-y-2 max-h-[calc(100vh-20rem)] overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-green-300 scrollbar-track-green-100">
                             <div
                                 v-for="card in infoCards"
                                 :key="card.id"
@@ -312,65 +417,182 @@ const onSignPlaced = () => {
                     </h3>
 
                     <div class="flex gap-2 overflow-x-auto px-1 py-1 pb-2">
+                        <!-- Maíz - Bloqueado -->
                         <button
-                            class="font-fredoka flex h-15 w-16 flex-shrink-0 flex-col items-center justify-center rounded-lg border-2 border-green-200 bg-green-100 transition-all hover:scale-105 hover:border-green-300 hover:bg-green-200"
+                            class="font-fredoka relative flex h-15 w-16 flex-shrink-0 cursor-not-allowed flex-col items-center justify-center rounded-lg border-2 border-gray-300 bg-gray-200 opacity-60 transition-all"
+                            disabled
                         >
                             <div class="text-lg">🌽</div>
-                            <span class="text-xs font-medium text-green-800"
+                            <span class="text-xs font-medium text-gray-600"
                                 >Maíz</span
                             >
+                            <!-- Candado -->
+                            <div
+                                class="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-500"
+                            >
+                                <span class="text-xs text-white">🔒</span>
+                            </div>
+                            <!-- Indicador de nivel -->
+                            <div
+                                class="absolute right-0 -bottom-1 left-0 rounded-b-lg bg-red-500 px-1 text-xs text-white"
+                            >
+                                Nivel 3
+                            </div>
                         </button>
 
+                        <!-- Tomate - Bloqueado -->
                         <button
-                            class="font-fredoka flex h-15 w-16 flex-shrink-0 flex-col items-center justify-center rounded-lg border-2 border-red-200 bg-red-100 transition-all hover:scale-105 hover:border-red-300 hover:bg-red-200"
+                            class="font-fredoka relative flex h-15 w-16 flex-shrink-0 cursor-not-allowed flex-col items-center justify-center rounded-lg border-2 border-gray-300 bg-gray-200 opacity-60 transition-all"
+                            disabled
                         >
                             <div class="text-lg">🍅</div>
-                            <span class="text-xs font-medium text-red-800"
+                            <span class="text-xs font-medium text-gray-600"
                                 >Tomate</span
                             >
+                            <!-- Candado -->
+                            <div
+                                class="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-500"
+                            >
+                                <span class="text-xs text-white">🔒</span>
+                            </div>
+                            <!-- Indicador de nivel -->
+                            <div
+                                class="absolute right-0 -bottom-1 left-0 rounded-b-lg bg-red-500 px-1 text-xs text-white"
+                            >
+                                Nivel 2
+                            </div>
                         </button>
 
+                        <!-- Papa - Desbloqueada -->
                         <button
-                            class="font-fredoka flex h-15 w-16 flex-shrink-0 flex-col items-center justify-center rounded-lg border-2 border-green-200 bg-green-100 transition-all hover:scale-105 hover:border-green-300 hover:bg-green-200"
+                            @click="togglePotatoMode"
+                            class="font-fredoka relative flex h-15 w-16 flex-shrink-0 flex-col items-center justify-center rounded-lg border-2 transition-all hover:scale-105"
+                            :class="
+                                potatoMode
+                                    ? 'border-amber-400 bg-amber-300 text-amber-900 shadow-lg'
+                                    : 'border-amber-200 bg-amber-100 hover:border-amber-300 hover:bg-amber-200'
+                            "
+                        >
+                            <div class="text-lg">🥔</div>
+                            <span
+                                class="text-xs font-medium"
+                                :class="
+                                    potatoMode
+                                        ? 'text-amber-900'
+                                        : 'text-amber-800'
+                                "
+                                >Papa</span
+                            >
+                            <!-- Indicador de desbloqueado -->
+                            <div
+                                class="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-green-500"
+                            >
+                                <span class="text-xs text-white">✓</span>
+                            </div>
+                        </button>
+
+                        <!-- Alfalfa - Desbloqueada -->
+                        <button
+                            @click="toggleAlfalfaMode"
+                            class="font-fredoka relative flex h-15 w-16 flex-shrink-0 flex-col items-center justify-center rounded-lg border-2 transition-all hover:scale-105"
+                            :class="
+                                alfalfaMode
+                                    ? 'border-green-400 bg-green-300 text-green-900 shadow-lg'
+                                    : 'border-green-200 bg-green-100 hover:border-green-300 hover:bg-green-200'
+                            "
+                        >
+                            <div class="text-lg">🍀</div>
+                            <span
+                                class="text-xs font-medium"
+                                :class="
+                                    alfalfaMode
+                                        ? 'text-green-900'
+                                        : 'text-green-800'
+                                "
+                                >Alfalfa</span
+                            >
+                            <!-- Indicador de desbloqueado -->
+                            <div
+                                class="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-green-500"
+                            >
+                                <span class="text-xs text-white">✓</span>
+                            </div>
+                        </button>
+
+                        <!-- Lechuga - Bloqueada -->
+                        <button
+                            class="font-fredoka relative flex h-15 w-16 flex-shrink-0 cursor-not-allowed flex-col items-center justify-center rounded-lg border-2 border-gray-300 bg-gray-200 opacity-60 transition-all"
+                            disabled
                         >
                             <div class="text-lg">🥬</div>
-                            <span class="text-xs font-medium text-green-800"
+                            <span class="text-xs font-medium text-gray-600"
                                 >Lechuga</span
                             >
+                            <!-- Candado -->
+                            <div
+                                class="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-500"
+                            >
+                                <span class="text-xs text-white">🔒</span>
+                            </div>
+                            <!-- Indicador de nivel -->
+                            <div
+                                class="absolute right-0 -bottom-1 left-0 rounded-b-lg bg-red-500 px-1 text-xs text-white"
+                            >
+                                Nivel 4
+                            </div>
                         </button>
 
+                        <!-- Zanahoria - Bloqueada -->
                         <button
-                            class="font-fredoka flex h-15 w-16 flex-shrink-0 flex-col items-center justify-center rounded-lg border-2 border-orange-200 bg-orange-100 transition-all hover:scale-105 hover:border-orange-300 hover:bg-orange-200"
+                            class="font-fredoka relative flex h-15 w-16 flex-shrink-0 cursor-not-allowed flex-col items-center justify-center rounded-lg border-2 border-gray-300 bg-gray-200 opacity-60 transition-all"
+                            disabled
                         >
                             <div class="text-lg">🥕</div>
-                            <span class="text-xs font-medium text-orange-800"
+                            <span class="text-xs font-medium text-gray-600"
                                 >Zanahoria</span
                             >
+                            <!-- Candado -->
+                            <div
+                                class="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-500"
+                            >
+                                <span class="text-xs text-white">🔒</span>
+                            </div>
+                            <!-- Indicador de nivel -->
+                            <div
+                                class="absolute right-0 -bottom-1 left-0 rounded-b-lg bg-red-500 px-1 text-xs text-white"
+                            >
+                                Nivel 5
+                            </div>
                         </button>
 
+                        <!-- Girasol - Bloqueado -->
                         <button
-                            class="font-fredoka flex h-15 w-16 flex-shrink-0 flex-col items-center justify-center rounded-lg border-2 border-yellow-200 bg-yellow-100 transition-all hover:scale-105 hover:border-yellow-300 hover:bg-yellow-200"
+                            class="font-fredoka relative flex h-15 w-16 flex-shrink-0 cursor-not-allowed flex-col items-center justify-center rounded-lg border-2 border-gray-300 bg-gray-200 opacity-60 transition-all"
+                            disabled
                         >
                             <div class="text-lg">🌻</div>
-                            <span class="text-xs font-medium text-yellow-800"
+                            <span class="text-xs font-medium text-gray-600"
                                 >Girasol</span
                             >
-                        </button>
-
-                        <button
-                            class="font-fredoka flex h-15 w-16 flex-shrink-0 flex-col items-center justify-center rounded-lg border-2 border-pink-200 bg-pink-100 transition-all hover:scale-105 hover:border-pink-300 hover:bg-pink-200"
-                        >
-                            <div class="text-lg">🌸</div>
-                            <span class="text-xs font-medium text-pink-800"
-                                >Flores</span
+                            <!-- Candado -->
+                            <div
+                                class="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-500"
                             >
+                                <span class="text-xs text-white">🔒</span>
+                            </div>
+                            <!-- Indicador de nivel -->
+                            <div
+                                class="absolute right-0 -bottom-1 left-0 rounded-b-lg bg-red-500 px-1 text-xs text-white"
+                            >
+                                Nivel 6
+                            </div>
                         </button>
                     </div>
                 </div>
 
                 <!-- Sección de Tipos de Riego -->
                 <div
-                    class="rounded-xl bg-white/90 p-2 shadow-md backdrop-blur-sm lg:col-span-5"
+                    class="rounded-xl bg-white/90 p-2 shadow-md backdrop-blur-sm lg:col-span-3"
                 >
                     <h3
                         class="font-fredoka mb-2 flex items-center text-sm font-bold text-blue-800"
@@ -380,61 +602,111 @@ const onSignPlaced = () => {
                     </h3>
 
                     <div class="flex gap-2 overflow-x-auto px-1 py-1 pb-2">
+                        <!-- Aspersión - Disponible -->
                         <button
-                            class="font-fredoka flex h-15 w-20 flex-shrink-0 flex-col items-center justify-center rounded-lg border-2 border-blue-200 bg-blue-100 transition-all hover:scale-105 hover:border-blue-300 hover:bg-blue-200"
+                            @click="toggleSprinklerMode"
+                            class="font-fredoka relative flex h-15 w-18 flex-shrink-0 flex-col items-center justify-center rounded-lg border-2 transition-all hover:scale-105"
+                            :class="
+                                sprinklerMode
+                                    ? 'border-cyan-400 bg-cyan-300 text-cyan-900 shadow-lg'
+                                    : 'border-blue-200 bg-blue-100 hover:border-blue-300 hover:bg-blue-200'
+                            "
                         >
                             <div class="text-lg">🚿</div>
                             <span
-                                class="text-center text-xs font-medium text-blue-800"
+                                class="text-center text-xs font-medium"
+                                :class="
+                                    sprinklerMode
+                                        ? 'text-cyan-900'
+                                        : 'text-blue-800'
+                                "
                                 >Aspersión</span
                             >
+                            <!-- Indicador de disponible -->
+                            <div
+                                class="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-green-500"
+                            >
+                                <span class="text-xs text-white">✓</span>
+                            </div>
                         </button>
 
+                        <!-- Goteo - Bloqueado -->
                         <button
-                            class="font-fredoka flex h-15 w-20 flex-shrink-0 flex-col items-center justify-center rounded-lg border-2 border-cyan-200 bg-cyan-100 transition-all hover:scale-105 hover:border-cyan-300 hover:bg-cyan-200"
+                            class="font-fredoka relative flex h-15 w-18 flex-shrink-0 cursor-not-allowed flex-col items-center justify-center rounded-lg border-2 border-gray-300 bg-gray-200 opacity-60 transition-all"
+                            disabled
                         >
                             <div class="text-lg">💧</div>
                             <span
-                                class="text-center text-xs font-medium text-cyan-800"
+                                class="text-center text-xs font-medium text-gray-600"
                                 >Goteo</span
                             >
+                            <!-- Candado -->
+                            <div
+                                class="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-500"
+                            >
+                                <span class="text-xs text-white">🔒</span>
+                            </div>
+                            <!-- Indicador de nivel -->
+                            <div
+                                class="absolute right-0 -bottom-1 left-0 rounded-b-lg bg-red-500 px-1 text-xs text-white"
+                            >
+                                Nivel 3
+                            </div>
                         </button>
 
+                        <!-- Inundación - Bloqueado -->
                         <button
-                            class="font-fredoka flex h-15 w-20 flex-shrink-0 flex-col items-center justify-center rounded-lg border-2 border-teal-200 bg-teal-100 transition-all hover:scale-105 hover:border-teal-300 hover:bg-teal-200"
+                            class="font-fredoka relative flex h-15 w-18 flex-shrink-0 cursor-not-allowed flex-col items-center justify-center rounded-lg border-2 border-gray-300 bg-gray-200 opacity-60 transition-all"
+                            disabled
                         >
                             <div class="text-lg">🌊</div>
                             <span
-                                class="text-center text-xs font-medium text-teal-800"
+                                class="text-center text-xs font-medium text-gray-600"
                                 >Inundación</span
                             >
+                            <!-- Candado -->
+                            <div
+                                class="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-500"
+                            >
+                                <span class="text-xs text-white">🔒</span>
+                            </div>
+                            <!-- Indicador de nivel -->
+                            <div
+                                class="absolute right-0 -bottom-1 left-0 rounded-b-lg bg-red-500 px-1 text-xs text-white"
+                            >
+                                Nivel 5
+                            </div>
                         </button>
 
+                        <!-- Automático - Bloqueado -->
                         <button
-                            class="font-fredoka flex h-15 w-20 flex-shrink-0 flex-col items-center justify-center rounded-lg border-2 border-indigo-200 bg-indigo-100 transition-all hover:scale-105 hover:border-indigo-300 hover:bg-indigo-200"
+                            class="font-fredoka relative flex h-15 w-18 flex-shrink-0 cursor-not-allowed flex-col items-center justify-center rounded-lg border-2 border-gray-300 bg-gray-200 opacity-60 transition-all"
+                            disabled
                         >
                             <div class="text-lg">⚡</div>
                             <span
-                                class="text-center text-xs font-medium text-indigo-800"
+                                class="text-center text-xs font-medium text-gray-600"
                                 >Automático</span
                             >
-                        </button>
-
-                        <button
-                            class="font-fredoka flex h-15 w-20 flex-shrink-0 flex-col items-center justify-center rounded-lg border-2 border-emerald-200 bg-emerald-100 transition-all hover:scale-105 hover:border-emerald-300 hover:bg-emerald-200"
-                        >
-                            <div class="text-lg">🌿</div>
-                            <span
-                                class="text-center text-xs font-medium text-emerald-800"
-                                >Natural</span
+                            <!-- Candado -->
+                            <div
+                                class="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-500"
                             >
+                                <span class="text-xs text-white">🔒</span>
+                            </div>
+                            <!-- Indicador de nivel -->
+                            <div
+                                class="absolute right-0 -bottom-1 left-0 rounded-b-lg bg-red-500 px-1 text-xs text-white"
+                            >
+                                Nivel 8
+                            </div>
                         </button>
                     </div>
                 </div>
 
                 <!-- Sección de Acciones Especiales -->
                 <div
-                    class="rounded-xl bg-white/90 p-2 shadow-md backdrop-blur-sm lg:col-span-2"
+                    class="rounded-xl bg-white/90 p-2 shadow-md backdrop-blur-sm lg:col-span-4"
                 >
                     <h3
                         class="font-fredoka mb-2 flex items-center text-sm font-bold text-amber-800"
@@ -485,6 +757,27 @@ const onSignPlaced = () => {
                                         : 'text-yellow-800'
                                 "
                                 >{{ signMode ? 'Colocando' : 'Letrero' }}</span
+                            >
+                        </button>
+
+                        <button
+                            @click="toggleRainMode"
+                            class="font-fredoka flex h-15 w-24 flex-shrink-0 flex-col items-center justify-center rounded-lg border-2 transition-all hover:scale-105"
+                            :class="
+                                rainMode
+                                    ? 'border-blue-400 bg-blue-300 text-blue-900 shadow-lg'
+                                    : 'border-blue-200 bg-blue-100 hover:border-blue-300 hover:bg-blue-200'
+                            "
+                        >
+                            <div class="text-lg">🌧️</div>
+                            <span
+                                class="text-center text-xs font-medium"
+                                :class="
+                                    rainMode ? 'text-blue-900' : 'text-blue-800'
+                                "
+                                >{{
+                                    rainMode ? 'Lloviendo' : 'Riego Natural'
+                                }}</span
                             >
                         </button>
 

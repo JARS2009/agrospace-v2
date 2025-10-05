@@ -1,16 +1,14 @@
 <script setup lang="ts">
-import { login, register } from '@/routes';
-import { Head, Link } from '@inertiajs/vue3';
-import { ref, watch, computed } from 'vue';
-import { Form } from '@inertiajs/vue3';
-import RegisteredUserController from '@/actions/App/Http/Controllers/Auth/RegisteredUserController';
 import AuthenticatedSessionController from '@/actions/App/Http/Controllers/Auth/AuthenticatedSessionController';
+import RegisteredUserController from '@/actions/App/Http/Controllers/Auth/RegisteredUserController';
 import InputError from '@/components/InputError.vue';
 import LandAreaSelector from '@/components/LandAreaSelector.vue';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Form, Head } from '@inertiajs/vue3';
 import { LoaderCircle, X } from 'lucide-vue-next';
+import { computed, ref, watch } from 'vue';
 
 const showLoginForm = ref(false);
 const showRegisterForm = ref(false);
@@ -52,17 +50,18 @@ const updateHiddenFields = () => {
 // Función para validar que se haya seleccionado un área antes de enviar (reactiva)
 const isAreaValid = computed(() => {
     if (!landAreaSelectorRef.value) return false;
-    
+
     const areaData = landAreaSelectorRef.value.getAreaData();
     console.log('Validating area data:', areaData); // Debug
     console.log('Land area name:', landAreaName.value); // Debug
-    
-    const hasCoordinates = areaData && areaData.coordinates && areaData.coordinates.length >= 3;
+
+    const hasCoordinates =
+        areaData && areaData.coordinates && areaData.coordinates.length >= 3;
     const hasSize = areaData && areaData.size > 0;
     const hasName = landAreaName.value && landAreaName.value.trim() !== '';
-    
+
     console.log('Validation results:', { hasCoordinates, hasSize, hasName }); // Debug
-    
+
     return hasCoordinates && hasSize && hasName;
 });
 
@@ -82,7 +81,7 @@ const handleImageError = (event) => {
 </script>
 
 <template>
-    <Head title="AgroSpace - Farm Game">
+    <Head title="ChakraSpace - Farm Game">
         <link rel="preconnect" href="https://fonts.googleapis.com/" />
         <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin />
         <link
@@ -132,7 +131,7 @@ const handleImageError = (event) => {
                 <h1
                     class="font-fredoka mb-4 text-6xl font-bold text-green-800 drop-shadow-lg md:text-8xl"
                 >
-                    AgroSpace
+                    ChakraSpace
                 </h1>
                 <p
                     class="font-fredoka text-xl font-medium text-green-700 md:text-2xl"
@@ -145,7 +144,9 @@ const handleImageError = (event) => {
             </div>
 
             <!-- Botones de acción principales -->
-            <div class="animate-slide-up flex flex-col gap-6 sm:flex-row justify-center items-center mb-8">
+            <div
+                class="animate-slide-up mb-8 flex flex-col items-center justify-center gap-6 sm:flex-row"
+            >
                 <button
                     @click="openLoginForm"
                     class="group font-fredoka flex transform items-center gap-3 rounded-2xl bg-gradient-to-r from-green-500 to-green-600 px-8 py-4 text-lg font-bold text-white shadow-xl transition-all duration-300 hover:scale-105 hover:from-green-600 hover:to-green-700"
@@ -569,29 +570,29 @@ const handleImageError = (event) => {
         </main>
 
         <!-- Formulario de Login (Izquierda) -->
-        <div 
+        <div
             v-if="showLoginForm"
             class="fixed inset-0 z-50 flex"
             @click="closeForms"
         >
             <!-- Formulario de Login (Izquierda) -->
-            <div 
-                class="animate-slide-in-left bg-gradient-to-br from-green-50 to-green-100 p-8 shadow-2xl w-full max-w-md h-full overflow-y-auto"
+            <div
+                class="animate-slide-in-left h-full w-full max-w-md overflow-y-auto bg-gradient-to-br from-green-50 to-green-100 p-8 shadow-2xl"
                 @click.stop
             >
-                <div class="flex items-center justify-between mb-6">
+                <div class="mb-6 flex items-center justify-between">
                     <h2 class="font-fredoka text-3xl font-bold text-green-800">
                         ¡Bienvenido de vuelta!
                     </h2>
-                    <button 
+                    <button
                         @click="closeForms"
-                        class="p-2 rounded-full hover:bg-green-200 transition-colors"
+                        class="rounded-full p-2 transition-colors hover:bg-green-200"
                     >
                         <X class="h-6 w-6 text-green-700" />
                     </button>
                 </div>
-                
-                <p class="font-fredoka text-green-700 mb-8">
+
+                <p class="font-fredoka mb-8 text-green-700">
                     Ingresa a tu granja y continúa cultivando tus sueños
                 </p>
 
@@ -602,7 +603,10 @@ const handleImageError = (event) => {
                     class="space-y-6"
                 >
                     <div>
-                        <Label for="login-email" class="font-fredoka text-green-800 font-semibold">
+                        <Label
+                            for="login-email"
+                            class="font-fredoka font-semibold text-green-800"
+                        >
                             Correo Electrónico
                         </Label>
                         <Input
@@ -613,14 +617,17 @@ const handleImageError = (event) => {
                             autofocus
                             :tabindex="1"
                             autocomplete="email"
-                            class="mt-2 border-green-300 focus:border-green-500 focus:ring-green-500 rounded-xl"
+                            class="mt-2 rounded-xl border-green-300 focus:border-green-500 focus:ring-green-500"
                             placeholder="tu@email.com"
                         />
                         <InputError :message="errors.email" class="mt-1" />
                     </div>
 
                     <div>
-                        <Label for="login-password" class="font-fredoka text-green-800 font-semibold">
+                        <Label
+                            for="login-password"
+                            class="font-fredoka font-semibold text-green-800"
+                        >
                             Contraseña
                         </Label>
                         <Input
@@ -630,7 +637,7 @@ const handleImageError = (event) => {
                             required
                             :tabindex="2"
                             autocomplete="current-password"
-                            class="mt-2 border-green-300 focus:border-green-500 focus:ring-green-500 rounded-xl"
+                            class="mt-2 rounded-xl border-green-300 focus:border-green-500 focus:ring-green-500"
                             placeholder="Tu contraseña"
                         />
                         <InputError :message="errors.password" class="mt-1" />
@@ -639,9 +646,12 @@ const handleImageError = (event) => {
                     <Button
                         type="submit"
                         :disabled="processing"
-                        class="w-full font-fredoka bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold py-3 rounded-xl shadow-lg transition-all duration-300 hover:scale-105 disabled:opacity-50"
+                        class="font-fredoka w-full rounded-xl bg-gradient-to-r from-green-500 to-green-600 py-3 font-bold text-white shadow-lg transition-all duration-300 hover:scale-105 hover:from-green-600 hover:to-green-700 disabled:opacity-50"
                     >
-                        <LoaderCircle v-if="processing" class="mr-2 h-4 w-4 animate-spin" />
+                        <LoaderCircle
+                            v-if="processing"
+                            class="mr-2 h-4 w-4 animate-spin"
+                        />
                         Entrar a la Granja
                     </Button>
                 </Form>
@@ -649,31 +659,35 @@ const handleImageError = (event) => {
                 <div class="mt-6 text-center">
                     <p class="font-fredoka text-green-700">
                         ¿No tienes una granja aún?
-                        <button 
+                        <button
                             @click="openRegisterForm"
-                            class="text-amber-600 hover:text-amber-700 font-bold underline"
+                            class="font-bold text-amber-600 underline hover:text-amber-700"
                         >
                             Crear Nueva Granja
                         </button>
                     </p>
                 </div>
             </div>
-            
+
             <!-- Imagen de Cajamarca (Derecha) -->
-            <div 
-                class="flex-1 h-full bg-cover bg-center bg-no-repeat relative"
+            <div
+                class="relative h-full flex-1 bg-cover bg-center bg-no-repeat"
                 @click.stop
             >
-                <img 
-                    src="http://127.0.0.1:8000/img/cajamarca.jpg" 
+                <img
+                    src="http://127.0.0.1:8000/img/cajamarca.jpg"
                     alt="Cajamarca landscape"
-                    class="absolute inset-0 w-full h-full object-cover"
+                    class="absolute inset-0 h-full w-full object-cover"
                     @error="handleImageError"
                 />
-                <div class="h-full bg-black bg-opacity-60 flex items-center justify-center">
-                    <div class="text-center text-white p-8">
-                        <h3 class="font-fredoka text-4xl font-bold mb-4 drop-shadow-lg">
-                            Bienvenido a AgroSpace
+                <div
+                    class="bg-opacity-60 flex h-full items-center justify-center bg-black"
+                >
+                    <div class="p-8 text-center text-white">
+                        <h3
+                            class="font-fredoka mb-4 text-4xl font-bold drop-shadow-lg"
+                        >
+                            Bienvenido a ChakraSpace
                         </h3>
                         <p class="font-fredoka text-xl drop-shadow-md">
                             Cultiva tus sueños en las tierras de Cajamarca
@@ -684,23 +698,28 @@ const handleImageError = (event) => {
         </div>
 
         <!-- Formulario de Registro (Derecha) -->
-        <div 
+        <div
             v-if="showRegisterForm"
-            class="fixed inset-0 z-50 flex bg-black bg-opacity-50"
+            class="bg-opacity-50 fixed inset-0 z-50 flex bg-black"
             @click="closeForms"
         >
             <!-- Mapa de selección de área (Izquierda - 3/4) -->
-            <div class="w-3/4 h-full relative" @click.stop>
-                <div class="h-full bg-gradient-to-br from-green-50 to-emerald-100 p-6">
-                    <div class="h-full flex flex-col">
-                        <h3 class="font-fredoka text-2xl font-bold text-green-800 mb-4">
+            <div class="relative h-full w-3/4" @click.stop>
+                <div
+                    class="h-full bg-gradient-to-br from-green-50 to-emerald-100 p-6"
+                >
+                    <div class="flex h-full flex-col">
+                        <h3
+                            class="font-fredoka mb-4 text-2xl font-bold text-green-800"
+                        >
                             Selecciona tu Terreno
                         </h3>
                         <!-- Sección superior con texto, campos y botones -->
                         <div class="mb-4 space-y-4">
                             <div class="flex items-center justify-between">
-                                <p class="font-fredoka text-green-700 text-sm">
-                                    Marca en el mapa el área donde establecerás tu granja
+                                <p class="font-fredoka text-sm text-green-700">
+                                    Marca en el mapa el área donde establecerás
+                                    tu granja
                                 </p>
                                 <div class="flex gap-3">
                                     <button
@@ -724,7 +743,13 @@ const handleImageError = (event) => {
                                         Limpiar área
                                     </button>
                                     <!-- Información del área calculada automáticamente -->
-                                    <div v-if="landAreaSelectorRef?.getAreaData?.()?.size > 0" class="font-fredoka flex items-center gap-2 rounded-xl bg-gradient-to-r from-green-500 to-green-600 px-4 py-2 text-white shadow-lg">
+                                    <div
+                                        v-if="
+                                            landAreaSelectorRef?.getAreaData?.()
+                                                ?.size > 0
+                                        "
+                                        class="font-fredoka flex items-center gap-2 rounded-xl bg-gradient-to-r from-green-500 to-green-600 px-4 py-2 text-white shadow-lg"
+                                    >
                                         <svg
                                             class="h-4 w-4"
                                             fill="none"
@@ -738,42 +763,53 @@ const handleImageError = (event) => {
                                                 d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"
                                             ></path>
                                         </svg>
-                                        Área: {{ landAreaSelectorRef?.getAreaData?.()?.size || 0 }} ha
+                                        Área:
+                                        {{
+                                            landAreaSelectorRef?.getAreaData?.()
+                                                ?.size || 0
+                                        }}
+                                        ha
                                     </div>
                                 </div>
                             </div>
-                            
+
                             <!-- Campos de nombre y descripción en la parte superior -->
                             <div class="grid grid-cols-2 gap-4">
                                 <div>
-                                    <Label for="land_area_name" class="font-fredoka text-green-800 font-semibold">
+                                    <Label
+                                        for="land_area_name"
+                                        class="font-fredoka font-semibold text-green-800"
+                                    >
                                         Nombre del área *
                                     </Label>
                                     <Input
                                         id="land_area_name"
                                         type="text"
                                         v-model="landAreaName"
-                                        class="mt-1 font-fredoka"
+                                        class="font-fredoka mt-1"
                                         placeholder="Ej: Parcela Norte"
                                         required
                                     />
                                 </div>
-                                
+
                                 <div>
-                                    <Label for="land_area_description" class="font-fredoka text-green-800 font-semibold">
+                                    <Label
+                                        for="land_area_description"
+                                        class="font-fredoka font-semibold text-green-800"
+                                    >
                                         Descripción
                                     </Label>
                                     <Input
                                         id="land_area_description"
                                         type="text"
                                         v-model="landAreaDescription"
-                                        class="mt-1 font-fredoka"
+                                        class="font-fredoka mt-1"
                                         placeholder="Describe las características..."
                                     />
                                 </div>
                             </div>
                         </div>
-                        <div class="flex-1 flex flex-col">
+                        <div class="flex flex-1 flex-col">
                             <div class="flex-1">
                                 <LandAreaSelector ref="landAreaSelectorRef" />
                             </div>
@@ -781,26 +817,27 @@ const handleImageError = (event) => {
                     </div>
                 </div>
             </div>
-            
+
             <!-- Formulario de registro (Derecha - 1/4) -->
-            <div 
-                class="w-1/4 bg-gradient-to-br from-amber-50 to-orange-100 p-6 shadow-2xl h-full overflow-y-auto"
+            <div
+                class="h-full w-1/4 overflow-y-auto bg-gradient-to-br from-amber-50 to-orange-100 p-6 shadow-2xl"
                 @click.stop
             >
-                <div class="flex items-center justify-between mb-6">
+                <div class="mb-6 flex items-center justify-between">
                     <h2 class="font-fredoka text-3xl font-bold text-amber-800">
                         ¡Crea tu Granja!
                     </h2>
-                    <button 
+                    <button
                         @click="closeForms"
-                        class="p-2 rounded-full hover:bg-amber-200 transition-colors"
+                        class="rounded-full p-2 transition-colors hover:bg-amber-200"
                     >
                         <X class="h-6 w-6 text-amber-700" />
                     </button>
                 </div>
-                
-                <p class="font-fredoka text-amber-700 mb-8">
-                    Comienza tu aventura agrícola y construye el imperio de tus sueños
+
+                <p class="font-fredoka mb-8 text-amber-700">
+                    Comienza tu aventura agrícola y construye el imperio de tus
+                    sueños
                 </p>
 
                 <Form
@@ -810,7 +847,10 @@ const handleImageError = (event) => {
                     class="space-y-6"
                 >
                     <div>
-                        <Label for="register-name" class="font-fredoka text-amber-800 font-semibold">
+                        <Label
+                            for="register-name"
+                            class="font-fredoka font-semibold text-amber-800"
+                        >
                             Nombre del Granjero
                         </Label>
                         <Input
@@ -821,14 +861,17 @@ const handleImageError = (event) => {
                             autofocus
                             :tabindex="1"
                             autocomplete="name"
-                            class="mt-2 border-amber-300 focus:border-amber-500 focus:ring-amber-500 rounded-xl"
+                            class="mt-2 rounded-xl border-amber-300 focus:border-amber-500 focus:ring-amber-500"
                             placeholder="Tu nombre completo"
                         />
                         <InputError :message="errors.name" class="mt-1" />
                     </div>
 
                     <div>
-                        <Label for="register-email" class="font-fredoka text-amber-800 font-semibold">
+                        <Label
+                            for="register-email"
+                            class="font-fredoka font-semibold text-amber-800"
+                        >
                             Correo Electrónico
                         </Label>
                         <Input
@@ -838,14 +881,17 @@ const handleImageError = (event) => {
                             required
                             :tabindex="2"
                             autocomplete="email"
-                            class="mt-2 border-amber-300 focus:border-amber-500 focus:ring-amber-500 rounded-xl"
+                            class="mt-2 rounded-xl border-amber-300 focus:border-amber-500 focus:ring-amber-500"
                             placeholder="tu@email.com"
                         />
                         <InputError :message="errors.email" class="mt-1" />
                     </div>
 
                     <div>
-                        <Label for="register-password" class="font-fredoka text-amber-800 font-semibold">
+                        <Label
+                            for="register-password"
+                            class="font-fredoka font-semibold text-amber-800"
+                        >
                             Contraseña
                         </Label>
                         <Input
@@ -855,14 +901,17 @@ const handleImageError = (event) => {
                             required
                             :tabindex="3"
                             autocomplete="new-password"
-                            class="mt-2 border-amber-300 focus:border-amber-500 focus:ring-amber-500 rounded-xl"
+                            class="mt-2 rounded-xl border-amber-300 focus:border-amber-500 focus:ring-amber-500"
                             placeholder="Crea una contraseña segura"
                         />
                         <InputError :message="errors.password" class="mt-1" />
                     </div>
 
                     <div>
-                        <Label for="register-password-confirmation" class="font-fredoka text-amber-800 font-semibold">
+                        <Label
+                            for="register-password-confirmation"
+                            class="font-fredoka font-semibold text-amber-800"
+                        >
                             Confirmar Contraseña
                         </Label>
                         <Input
@@ -872,18 +921,42 @@ const handleImageError = (event) => {
                             required
                             :tabindex="4"
                             autocomplete="new-password"
-                            class="mt-2 border-amber-300 focus:border-amber-500 focus:ring-amber-500 rounded-xl"
+                            class="mt-2 rounded-xl border-amber-300 focus:border-amber-500 focus:ring-amber-500"
                             placeholder="Confirma tu contraseña"
                         />
-                        <InputError :message="errors.password_confirmation" class="mt-1" />
+                        <InputError
+                            :message="errors.password_confirmation"
+                            class="mt-1"
+                        />
                     </div>
 
                     <!-- Campos ocultos para el área de terreno -->
-                    <input type="hidden" name="land_area_coordinates" :value="JSON.stringify(landAreaSelectorRef?.getAreaData?.()?.coordinates || [])" />
-                    <input type="hidden" name="land_area_size" :value="landAreaSelectorRef?.getAreaData?.()?.size || 0" />
-                    <input type="hidden" name="land_area_name" :value="landAreaName" />
-                    <input type="hidden" name="land_area_description" :value="landAreaDescription" />
-                    
+                    <input
+                        type="hidden"
+                        name="land_area_coordinates"
+                        :value="
+                            JSON.stringify(
+                                landAreaSelectorRef?.getAreaData?.()
+                                    ?.coordinates || [],
+                            )
+                        "
+                    />
+                    <input
+                        type="hidden"
+                        name="land_area_size"
+                        :value="landAreaSelectorRef?.getAreaData?.()?.size || 0"
+                    />
+                    <input
+                        type="hidden"
+                        name="land_area_name"
+                        :value="landAreaName"
+                    />
+                    <input
+                        type="hidden"
+                        name="land_area_description"
+                        :value="landAreaDescription"
+                    />
+
                     <!-- Errores de validación para campos de área -->
                     <InputError :message="errors.land_area_coordinates" />
                     <InputError :message="errors.land_area_size" />
@@ -893,24 +966,31 @@ const handleImageError = (event) => {
                     <Button
                         type="submit"
                         :disabled="processing || !isAreaValid"
-                        class="w-full font-fredoka bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-bold py-3 rounded-xl shadow-lg transition-all duration-300 hover:scale-105 disabled:opacity-50"
+                        class="font-fredoka w-full rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 py-3 font-bold text-white shadow-lg transition-all duration-300 hover:scale-105 hover:from-amber-600 hover:to-orange-600 disabled:opacity-50"
                     >
-                        <LoaderCircle v-if="processing" class="mr-2 h-4 w-4 animate-spin" />
+                        <LoaderCircle
+                            v-if="processing"
+                            class="mr-2 h-4 w-4 animate-spin"
+                        />
                         Crear Mi Granja
                     </Button>
-                    
+
                     <!-- Mensaje de ayuda para la validación -->
-                    <div v-if="!isAreaValid" class="text-center text-sm text-red-600 font-fredoka">
-                        * Debes seleccionar un área en el mapa y darle un nombre para continuar
+                    <div
+                        v-if="!isAreaValid"
+                        class="font-fredoka text-center text-sm text-red-600"
+                    >
+                        * Debes seleccionar un área en el mapa y darle un nombre
+                        para continuar
                     </div>
                 </Form>
 
                 <div class="mt-6 text-center">
                     <p class="font-fredoka text-amber-700">
                         ¿Ya tienes una granja?
-                        <button 
+                        <button
                             @click="openLoginForm"
-                            class="text-green-600 hover:text-green-700 font-bold underline"
+                            class="font-bold text-green-600 underline hover:text-green-700"
                         >
                             Entrar a la Granja
                         </button>

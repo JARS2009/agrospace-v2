@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import LandAreaSelector from '@/components/LandAreaSelector.vue';
 import { Head, Link } from '@inertiajs/vue3';
 import {
     ArrowLeft,
@@ -9,8 +10,7 @@ import {
     User,
     Zap,
 } from 'lucide-vue-next';
-import LandAreaSelector from '@/components/LandAreaSelector.vue';
-import { ref, onMounted, nextTick, computed } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 
 interface User {
     id: number;
@@ -55,15 +55,18 @@ const parsedCoordinates = computed(() => {
     console.log('=== DEBUGGING COORDINATE PARSING ===');
     console.log('Raw user data:', props.user);
     console.log('Raw land_area_coordinates:', props.user.land_area_coordinates);
-    console.log('Type of land_area_coordinates:', typeof props.user.land_area_coordinates);
-    
+    console.log(
+        'Type of land_area_coordinates:',
+        typeof props.user.land_area_coordinates,
+    );
+
     if (!props.user.land_area_coordinates) {
         console.log('No coordinates found - returning empty array');
         return [];
     }
-    
+
     let coordinates = props.user.land_area_coordinates;
-    
+
     // Si es string, parsearlo
     if (typeof coordinates === 'string') {
         console.log('Coordinates is string, attempting to parse...');
@@ -75,16 +78,19 @@ const parsedCoordinates = computed(() => {
             return [];
         }
     }
-    
+
     // Verificar que sea array
     if (!Array.isArray(coordinates)) {
-        console.error('Coordinates is not an array after parsing:', coordinates);
+        console.error(
+            'Coordinates is not an array after parsing:',
+            coordinates,
+        );
         return [];
     }
-    
+
     console.log('Final parsed coordinates:', coordinates);
     console.log('Number of coordinate points:', coordinates.length);
-    
+
     // Validar estructura de cada coordenada
     coordinates.forEach((coord, index) => {
         console.log(`Coordinate ${index}:`, coord);
@@ -92,7 +98,7 @@ const parsedCoordinates = computed(() => {
             console.error(`Invalid coordinate at index ${index}:`, coord);
         }
     });
-    
+
     return coordinates;
 });
 
@@ -100,17 +106,22 @@ const parsedCoordinates = computed(() => {
 const loadUserLandArea = () => {
     console.log('=== LOADING USER LAND AREA ===');
     console.log('User prop:', props.user);
-    console.log('User land_area_coordinates:', props.user.land_area_coordinates);
+    console.log(
+        'User land_area_coordinates:',
+        props.user.land_area_coordinates,
+    );
     console.log('User land_area_size:', props.user.land_area_size);
     console.log('User land_area_name:', props.user.land_area_name);
-    
+
     const coordinates = parsedCoordinates.value;
     console.log('Processed coordinates for LandAreaSelector:', coordinates);
-    
+
     if (coordinates.length === 0) {
         console.log('No coordinates to display');
     } else {
-        console.log(`Will display ${coordinates.length} coordinate points on map`);
+        console.log(
+            `Will display ${coordinates.length} coordinate points on map`,
+        );
     }
 };
 
@@ -120,7 +131,7 @@ onMounted(() => {
 </script>
 
 <template>
-    <Head title="Mi Perfil - AgroSpace" />
+    <Head title="Mi Perfil - ChakraSpace" />
 
     <div
         class="min-h-screen bg-gradient-to-br from-green-50 via-blue-50 to-amber-50"
@@ -210,12 +221,14 @@ onMounted(() => {
                     <div class="mt-6 rounded-2xl bg-white p-6 shadow-xl">
                         <div class="mb-4 flex items-center space-x-3">
                             <MapPin class="h-8 w-8 text-green-500" />
-                            <h3 class="font-fredoka text-2xl font-bold text-gray-800">
+                            <h3
+                                class="font-fredoka text-2xl font-bold text-gray-800"
+                            >
                                 Mi Terreno
                             </h3>
                         </div>
-                        
-                        <div class="h-96 rounded-lg overflow-hidden">
+
+                        <div class="h-96 overflow-hidden rounded-lg">
                             <LandAreaSelector
                                 ref="landAreaSelectorRef"
                                 :readonly="true"
@@ -223,12 +236,17 @@ onMounted(() => {
                                 :initial-coordinates="parsedCoordinates"
                                 :initial-size="user.land_area_size || 0"
                                 :initial-name="user.land_area_name || ''"
-                                :initial-description="user.land_area_description || ''"
+                                :initial-description="
+                                    user.land_area_description || ''
+                                "
                                 class="h-full w-full"
                             />
                         </div>
-                        
-                        <div v-if="user.land_area_name" class="mt-4 text-center">
+
+                        <div
+                            v-if="user.land_area_name"
+                            class="mt-4 text-center"
+                        >
                             <p class="font-fredoka text-sm text-gray-600">
                                 Vista de tu área de cultivo registrada
                             </p>
