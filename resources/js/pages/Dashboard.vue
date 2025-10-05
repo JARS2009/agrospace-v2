@@ -47,6 +47,10 @@ const logout = () => {
 // Estados reactivos
 const selectedDate = ref(new Date().toISOString().split('T')[0]);
 const selectedCard = ref<number | null>(null);
+const plowMode = ref(false); // Estado para el modo de arado
+const signMode = ref(false); // Estado para el modo de colocación de letreros
+const showSignModal = ref(false); // Estado para mostrar el modal de texto
+const signText = ref(''); // Texto del letrero
 
 // Datos de las tarjetas informativas
 const infoCards = ref([
@@ -87,6 +91,42 @@ const infoCards = ref([
 // Función para seleccionar tarjeta
 const selectCard = (cardId: number) => {
     selectedCard.value = selectedCard.value === cardId ? null : cardId;
+};
+
+// Función para alternar el modo de arado
+const togglePlowMode = () => {
+    plowMode.value = !plowMode.value;
+    // Desactivar modo letrero si se activa arado
+    if (plowMode.value) {
+        signMode.value = false;
+    }
+};
+
+// Función para activar el modo de colocación de letreros
+const activateSignMode = () => {
+    if (signText.value.trim()) {
+        signMode.value = true;
+        plowMode.value = false; // Desactivar modo arado
+        showSignModal.value = false;
+    }
+};
+
+// Función para abrir el modal de texto del letrero
+const openSignModal = () => {
+    showSignModal.value = true;
+    signText.value = '';
+};
+
+// Función para cancelar la colocación de letrero
+const cancelSignMode = () => {
+    signMode.value = false;
+    signText.value = '';
+};
+
+// Función para manejar la colocación exitosa del letrero
+const onSignPlaced = () => {
+    signMode.value = false;
+    signText.value = '';
 };
 </script>
 
@@ -131,7 +171,8 @@ const selectCard = (cardId: number) => {
                                         class="font-fredoka text-sm font-medium text-gray-600"
                                     >
                                         {{ progreso.xp_actual }}/{{
-                                            siguiente_nivel?.experiencia_requerida || progreso.xp_actual
+                                            siguiente_nivel?.experiencia_requerida ||
+                                            progreso.xp_actual
                                         }}
                                         XP
                                     </span>
@@ -191,7 +232,12 @@ const selectCard = (cardId: number) => {
                         class="h-full rounded-2xl bg-gradient-to-br from-green-100 to-emerald-100 p-2 shadow-xl"
                     >
                         <!-- Three.js Farm Scene -->
-                        <FarmScene3D />
+                        <FarmScene3D
+                            :plowMode="plowMode"
+                            :signMode="signMode"
+                            :signText="signText"
+                            @signPlaced="onSignPlaced"
+                        />
                     </div>
                 </div>
 
@@ -399,12 +445,46 @@ const selectCard = (cardId: number) => {
 
                     <div class="flex gap-2 overflow-x-auto px-1 py-1 pb-2">
                         <button
-                            class="font-fredoka flex h-15 w-24 flex-shrink-0 flex-col items-center justify-center rounded-lg border-2 border-amber-200 bg-amber-100 transition-all hover:scale-105 hover:border-amber-300 hover:bg-amber-200"
+                            @click="togglePlowMode"
+                            class="font-fredoka flex h-15 w-24 flex-shrink-0 flex-col items-center justify-center rounded-lg border-2 transition-all hover:scale-105"
+                            :class="
+                                plowMode
+                                    ? 'border-amber-400 bg-amber-300 text-amber-900 shadow-lg'
+                                    : 'border-amber-200 bg-amber-100 hover:border-amber-300 hover:bg-amber-200'
+                            "
                         >
                             <div class="text-lg">🚜</div>
                             <span
-                                class="text-center text-xs font-medium text-amber-800"
-                                >Preparar Terreno</span
+                                class="text-center text-xs font-medium"
+                                :class="
+                                    plowMode
+                                        ? 'text-amber-900'
+                                        : 'text-amber-800'
+                                "
+                                >{{
+                                    plowMode ? 'Desactivar' : 'Preparar Terreno'
+                                }}</span
+                            >
+                        </button>
+
+                        <button
+                            @click="openSignModal"
+                            class="font-fredoka flex h-15 w-24 flex-shrink-0 flex-col items-center justify-center rounded-lg border-2 transition-all hover:scale-105"
+                            :class="
+                                signMode
+                                    ? 'border-brown-400 bg-brown-300 text-brown-900 shadow-lg'
+                                    : 'border-yellow-600 bg-yellow-200 hover:border-yellow-700 hover:bg-yellow-300'
+                            "
+                        >
+                            <div class="text-lg">🪧</div>
+                            <span
+                                class="text-center text-xs font-medium"
+                                :class="
+                                    signMode
+                                        ? 'text-brown-900'
+                                        : 'text-yellow-800'
+                                "
+                                >{{ signMode ? 'Colocando' : 'Letrero' }}</span
                             >
                         </button>
 
@@ -421,6 +501,66 @@ const selectCard = (cardId: number) => {
                 </div>
             </div>
         </main>
+
+        <!-- Modal para texto del letrero -->
+        <div
+            v-if="showSignModal"
+            class="bg-opacity-50 fixed inset-0 z-50 flex items-center justify-center bg-black"
+        >
+            <div
+                class="mx-4 w-full max-w-md rounded-xl bg-white p-6 shadow-2xl"
+            >
+                <h3 class="font-fredoka mb-4 text-xl font-bold text-gray-800">
+                    🪧 Crear Letrero
+                </h3>
+                <p class="font-fredoka mb-4 text-gray-600">
+                    Escribe el texto que quieres mostrar en el letrero:
+                </p>
+                <input
+                    v-model="signText"
+                    type="text"
+                    placeholder="Ej: Bienvenidos a mi granja"
+                    class="font-fredoka w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-yellow-500 focus:ring-2 focus:ring-yellow-200 focus:outline-none"
+                    maxlength="50"
+                    @keyup.enter="activateSignMode"
+                />
+                <div class="mt-6 flex justify-end space-x-3">
+                    <button
+                        @click="showSignModal = false"
+                        class="font-fredoka px-4 py-2 text-gray-600 transition-colors hover:text-gray-800"
+                    >
+                        Cancelar
+                    </button>
+                    <button
+                        @click="activateSignMode"
+                        :disabled="!signText.trim()"
+                        class="font-fredoka rounded-lg bg-yellow-500 px-6 py-2 text-white transition-colors hover:bg-yellow-600 disabled:cursor-not-allowed disabled:bg-gray-300"
+                    >
+                        Colocar Letrero
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Indicador de modo letrero activo -->
+        <div
+            v-if="signMode"
+            class="fixed top-4 left-1/2 z-40 -translate-x-1/2 transform rounded-lg bg-yellow-500 px-6 py-3 text-white shadow-lg"
+        >
+            <div class="font-fredoka flex items-center space-x-2 font-semibold">
+                <span>🪧</span>
+                <span>Modo Letrero Activo</span>
+                <button
+                    @click="cancelSignMode"
+                    class="ml-4 text-yellow-200 hover:text-white"
+                >
+                    ✕
+                </button>
+            </div>
+            <p class="font-fredoka mt-1 text-sm opacity-90">
+                Haz clic en el terreno para colocar: "{{ signText }}"
+            </p>
+        </div>
     </div>
 </template>
 
