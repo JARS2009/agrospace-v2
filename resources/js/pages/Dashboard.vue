@@ -2,6 +2,42 @@
 import { Head, Link, router } from '@inertiajs/vue3';
 import { Calendar, LogOut, Star, TrendingUp, User } from 'lucide-vue-next';
 import { ref } from 'vue';
+import FarmScene3D from '../components/FarmScene3D.vue';
+
+interface User {
+    id: number;
+    name: string;
+    email: string;
+    land_area_name?: string;
+    land_area_description?: string;
+    land_area_size?: number;
+    land_area_coordinates?: Array<{ lat: number; lng: number }> | string;
+}
+
+interface Progreso {
+    nombre: string;
+    nivel_actual: number;
+    xp_actual: number;
+    progreso_siguiente_nivel: number;
+    puede_subir_nivel: boolean;
+}
+
+interface Nivel {
+    id: number;
+    nombre: string;
+    descripcion: string;
+    experiencia_requerida: number;
+}
+
+interface Props {
+    user: User;
+    progreso: Progreso;
+    nivel_actual: Nivel | null;
+    siguiente_nivel: Nivel | null;
+    desbloqueos: any[];
+}
+
+const props = defineProps<Props>();
 
 // Función para cerrar sesión
 const logout = () => {
@@ -10,9 +46,6 @@ const logout = () => {
 
 // Estados reactivos
 const selectedDate = ref(new Date().toISOString().split('T')[0]);
-const currentLevel = ref(5);
-const currentExperience = ref(750);
-const maxExperience = ref(1000);
 const selectedCard = ref<number | null>(null);
 
 // Datos de las tarjetas informativas
@@ -87,7 +120,7 @@ const selectCard = (cardId: number) => {
                                 <span
                                     class="font-fredoka font-semibold text-green-800"
                                 >
-                                    Nivel {{ currentLevel }}
+                                    Nivel {{ progreso.nivel_actual }}
                                 </span>
                             </div>
 
@@ -97,8 +130,8 @@ const selectCard = (cardId: number) => {
                                     <span
                                         class="font-fredoka text-sm font-medium text-gray-600"
                                     >
-                                        {{ currentExperience }}/{{
-                                            maxExperience
+                                        {{ progreso.xp_actual }}/{{
+                                            siguiente_nivel?.experiencia_requerida || progreso.xp_actual
                                         }}
                                         XP
                                     </span>
@@ -108,7 +141,7 @@ const selectCard = (cardId: number) => {
                                         <div
                                             class="h-full bg-gradient-to-r from-blue-500 to-purple-500 transition-all duration-300"
                                             :style="{
-                                                width: `${(currentExperience / maxExperience) * 100}%`,
+                                                width: `${progreso.progreso_siguiente_nivel}%`,
                                             }"
                                         ></div>
                                     </div>
@@ -155,24 +188,10 @@ const selectCard = (cardId: number) => {
                 <!-- Área del Terreno 3D (9/12) -->
                 <div class="col-span-9">
                     <div
-                        class="h-full rounded-2xl bg-gradient-to-br from-green-100 to-emerald-100 p-6 shadow-xl"
+                        class="h-full rounded-2xl bg-gradient-to-br from-green-100 to-emerald-100 p-2 shadow-xl"
                     >
-                        <!-- Placeholder para Three.js -->
-                        <div
-                            class="flex h-[calc(100%)] items-center justify-center rounded-xl border-2 border-dashed border-green-300 bg-gradient-to-br from-green-200 to-blue-200"
-                        >
-                            <div class="text-center">
-                                <div class="mb-4 text-6xl">🌍</div>
-                                <h3
-                                    class="font-fredoka mb-2 text-xl font-semibold text-green-700"
-                                >
-                                    Terreno 3D
-                                </h3>
-                                <p class="font-fredoka text-green-600">
-                                    Aquí se renderizará el terreno con Three.js
-                                </p>
-                            </div>
-                        </div>
+                        <!-- Three.js Farm Scene -->
+                        <FarmScene3D />
                     </div>
                 </div>
 
